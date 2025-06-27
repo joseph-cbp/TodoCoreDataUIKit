@@ -12,7 +12,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     lazy var provider: ProviderProtocol = {
-        CoreDataProvider(inMemory: true)
+//        CoreDataProvider(inMemory: false)
+        CoreDataProvider.preview
     }()
 
 
