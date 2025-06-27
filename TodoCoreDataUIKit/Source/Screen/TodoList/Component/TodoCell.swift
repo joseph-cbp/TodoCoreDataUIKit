@@ -13,27 +13,37 @@ class TodoCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = .black
         
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    let descriptionLabel: UILabel = {
+    let detailLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.textColor = .black
         
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, detailLabel])
         stackView.axis = .vertical
         stackView.spacing = 8
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     private func setupUI() {
         addSubview(stackView)
         
@@ -47,7 +57,8 @@ class TodoCell: UITableViewCell {
         ])
     }
     
-    func configure(){
-        
+    func configure(with todo: TodoItem){
+        titleLabel.text = todo.title ?? "Unknown Title"
+        detailLabel.text = todo.detail ?? "Unknown Detail"
     }
 }
