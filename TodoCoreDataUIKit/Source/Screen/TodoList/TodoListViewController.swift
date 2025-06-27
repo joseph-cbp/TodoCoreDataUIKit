@@ -22,6 +22,7 @@ class TodoListViewController: UIViewController {
     
     private lazy var listTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(TodoCell.self, forCellReuseIdentifier: TodoCell.identifier)
@@ -30,21 +31,44 @@ class TodoListViewController: UIViewController {
         return tableView
     }()
     
-    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        viewModel.delegate = self
+        view = listTableView
+        viewModel.fetchTodos()
+    }
 }
 
 
 extension TodoListViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return viewModel.todoItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TodoCell.identifier, for: indexPath) as? TodoCell else { return UITableViewCell()}
         
-        cell.configure()
+        let todo = viewModel.todoItems[indexPath.row]
+        cell.configure(with: todo)
         return cell
     }
 }
 
-extension TodoListViewController: UITableViewDelegate{}
+extension TodoListViewController: UITableViewDelegate{
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90
+    }
+}
+
+
+extension TodoListViewController: TodoListViewModelDelegate{
+    func didUpdateTodoList() {
+        DispatchQueue.main.async {
+            self.listTableView.reloadData()
+        }
+    }
+    
+    
+}
