@@ -57,8 +57,8 @@ class TodoCell: UITableViewCell {
         ])
     }
     
-    func configure(with todo: TodoItem){
-        titleLabel.text = todo.title ?? "Unknown Title"
-        detailLabel.text = todo.detail ?? "Unknown Detail"
+    func configure(with todo: TodoItemDomain){
+        titleLabel.text = todo.title
+        detailLabel.text = todo.detail
     }
 }

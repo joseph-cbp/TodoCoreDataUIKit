@@ -11,10 +11,10 @@ import CoreData
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    lazy var provider: ProviderProtocol = {
-//        CoreDataProvider(inMemory: false)
-        CoreDataProvider.preview
-    }()
+//    lazy var provider: ProviderProtocol = {
+////        CoreDataProvider(inMemory: false)
+//        CoreDataProvider.preview
+//    }()
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -24,7 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = TodoListViewController(provider: provider)
+        window.rootViewController = TodoListViewController(/*provider: provider*/)
         
         window.makeKeyAndVisible()
         self.window = window
