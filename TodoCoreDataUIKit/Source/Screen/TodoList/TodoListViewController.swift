@@ -12,11 +12,12 @@ class TodoListViewController: UIViewController {
 //    var viewModel: TodoListViewModel
     var tasks: [TodoItemDomain] = []
     var interactor: TodoListInteractor?
+    private weak var flow: TodoListFlowDelegate?
     
-    init(/*provider: ProviderProtocol*/) {
-//        viewModel = TodoListViewModel(context: provider.context)
+    init(flow: TodoListFlowDelegate){
         super.init(nibName: nil, bundle: nil)
-        setupCycle()
+        self.flow = flow
+//        setupCycle()
     }
     
     func setupCycle() {
@@ -43,77 +44,38 @@ class TodoListViewController: UIViewController {
         return tableView
     }()
     
-    private let addButton: UIButton = {
+    private let newTaskButton: UIButton = {
         let button = UIButton()
         button.setTitle("Add Task", for: .normal)
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 12
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(createTask), for: .touchUpInside)
+        button.addTarget(self, action: #selector(presentNewTaskView), for: .touchUpInside)
+        
         return button
     }()
-    
-    private let titleField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter title..."
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.borderStyle = .roundedRect
-        textField.layer.cornerRadius = 8
-        
-        return textField
-    }()
-    
-    private var detailField: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Enter detail..."
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.borderStyle = .roundedRect
-        textField.layer.cornerRadius = 8
-        
-        return textField
-    }()
-    
-    lazy var formStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [titleField, detailField])
-        stackView.axis = .vertical
-        stackView.distribution = .fillProportionally
-        stackView.spacing = 8
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        return stackView
-    }()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-//        viewModel.delegate = self
-//        view = listTableView
-//        viewModel.fetchTodos()
         interactor?.fetchTasks()
         
     }
     
     private func setupUI() {
         view.backgroundColor = .white
-        view.addSubview(formStackView)
-        view.addSubview(addButton)
+        view.addSubview(newTaskButton)
         view.addSubview(listTableView)
-        
         
         setupConstraints()
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            formStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            formStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            formStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            newTaskButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            newTaskButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            addButton.topAnchor.constraint(equalTo: formStackView.bottomAnchor, constant: 16),
-            addButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            listTableView.topAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 16),
+            listTableView.topAnchor.constraint(equalTo: newTaskButton.bottomAnchor, constant: 16),
             listTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             listTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             listTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -122,10 +84,10 @@ class TodoListViewController: UIViewController {
     }
     
     @objc
-    func createTask() {
-        let todo = TodoItemDomain(title: titleField.text ?? "", detail: detailField.text ?? "", createdAt: "")
-        interactor?.addTask(task: todo)
-        
+    func presentNewTaskView() {
+        if let interactor = interactor{
+            flow?.presentNewTodoItem(interactor: interactor)
+        }
     }
 }
 
@@ -181,6 +143,4 @@ extension TodoListViewController: UITableViewDelegate{
         return 90
     }
 }
-
-
 
