@@ -15,6 +15,7 @@ protocol TodoListDisplayLogic: AnyObject {
 protocol TodoListBusinessLogic {
     func fetchTasks()
     func addTask(task: TodoItemDomain)
+    func updateTask(task: TodoItemDomain)
 }
 
 protocol TodoListPresentationLogic {
@@ -26,6 +27,8 @@ protocol TodoListServiceProtocol {
     func fetchTasks(completion: @escaping (Result<[TodoItem], Error>) -> Void)
     
     func addTask(_ task: TodoItemDomain, completion: @escaping (Result<TodoItem, Error>) -> Void)
+    
+    func updateData(_ task: TodoItemDomain, completion: @escaping (Result<TodoItem, any Error>) -> Void)
 }
 
 import CoreData
@@ -69,6 +72,35 @@ class TodoListWorker: TodoListServiceProtocol {
             }
         }
     }
+    
+    func updateData(_ task: TodoItemDomain, completion: @escaping (Result<TodoItem, any Error>) -> Void) {
+        let context = self.coreDataProvider.context
+        let fetchRequest: NSFetchRequest<TodoItem> = TodoItem.fetchRequest()
+        
+        do {
+            let tasks = try context.fetch(fetchRequest)
+            guard let toUpdate = tasks.first(where:{ todoItem in
+                todoItem.title == task.title
+            }) else {
+                
+                let error = NSError(domain: "Todo error", code: 404, userInfo: [NSLocalizedDescriptionKey : "Could Not Find"])
+                completion(.failure(error))
+                return
+            }
+            
+            toUpdate.title = task.title
+            toUpdate.detail = task.detail
+            try context.save()
+            
+            DispatchQueue.main.async {
+                completion(.success(toUpdate))
+            }
+            
+        } catch {
+            context.rollback()
+            completion(.failure(error))
+        }
+    }
 }
 
 class TodoListInteractor: TodoListBusinessLogic {
@@ -97,6 +129,18 @@ class TodoListInteractor: TodoListBusinessLogic {
             }
         }
     }
+    
+    func updateTask(task: TodoItemDomain) {
+        worker?.updateData(task) { result in
+            switch result {
+            case .success:
+                self.fetchTasks()
+            case .failure(let error):
+                self.presenter?.presentError(error.localizedDescription)
+            }
+        }
+    }
+    
 }
 
 class TodoListPresenter: TodoListPresentationLogic {
