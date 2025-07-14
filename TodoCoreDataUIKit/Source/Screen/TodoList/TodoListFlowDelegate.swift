@@ -9,4 +9,5 @@ import Foundation
 
 protocol TodoListFlowDelegate: AnyObject {
     func presentNewTodoItem(interactor: TodoListInteractor)
+    func presentUpdateTodoItem(task: TodoItemDomain, interactor: TodoListInteractor)
 }

@@ -35,9 +35,16 @@ class FlowController {
 
 extension FlowController: TodoListFlowDelegate {
     func presentNewTodoItem(interactor: TodoListInteractor) {
-        let newTask = NewTaskViewController()
+        let newTask = NewTaskViewController(mode: .add)
         newTask.interactor = interactor
         newTask.flow = self
         self.navigation?.present(newTask, animated: true)
+    }
+    
+    func presentUpdateTodoItem(task: TodoItemDomain, interactor: TodoListInteractor) {
+        let viewController = NewTaskViewController(mode: .update(task))
+        viewController.interactor = interactor
+        viewController.flow = self
+        self.navigation?.present(viewController, animated: true)
     }
 }
