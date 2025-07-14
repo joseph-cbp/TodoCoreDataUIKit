@@ -142,5 +142,24 @@ extension TodoListViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let flow = flow, let interactor = interactor else { return nil }
+        let updateAction = UIContextualAction(style: .normal, title: "Update") { [weak self] (_, _, completion) in
+            guard let self = self else {
+                completion(false)
+                return
+            }
+            
+            flow.presentUpdateTodoItem(task: self.tasks[indexPath.row], interactor: interactor)
+            completion(true)
+        }
+        updateAction.image = UIImage(systemName: "square.and.arrow.up")
+        updateAction.backgroundColor = .systemBlue
+        
+        let config =  UISwipeActionsConfiguration(actions: [updateAction])
+        
+        return config
+    }
 }
 
