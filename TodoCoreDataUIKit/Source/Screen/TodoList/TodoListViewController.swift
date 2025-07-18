@@ -21,7 +21,7 @@ class TodoListViewController: UIViewController {
     }
     
     func setupCycle() {
-        let worker = TodoListWorker(coreDataProvider: CoreDataProvider.preview)
+        let worker = TodoListService(coreDataProvider: CoreDataProvider.preview)
         let presenter = TodoListPresenter()
         let interactor = TodoListInteractor()
         presenter.viewController = self
@@ -94,10 +94,10 @@ class TodoListViewController: UIViewController {
 // MARK: Store (VIP)
 extension TodoListViewController: TodoListDisplayLogic {
     func displayTasks(tasks: [TodoItemDomain]) {
-        DispatchQueue.main.async {
-            self.tasks = tasks
+        DispatchQueue.main.async { [weak self] in
+            self?.tasks = tasks
+            self?.listTableView.reloadData()
         }
-        didUpdateTodoList()
     }
     
     func displayError(_ message: String) {
@@ -122,7 +122,6 @@ extension TodoListViewController: TodoListViewModelDelegate{
 // MARK: TableView DataSource
 extension TodoListViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return viewModel.todoItems.count
         return tasks.count
     }
     

@@ -16,7 +16,7 @@ class FlowController {
     func start() -> UIViewController? {
         // TODO: Jogar para uma Factory
         let startViewController = TodoListViewController(flow: self)
-        let worker = TodoListWorker(coreDataProvider: provider ?? CoreDataProvider(inMemory: false))
+        let worker = TodoListService(coreDataProvider: provider ?? CoreDataProvider(inMemory: false))
         let presenter = TodoListPresenter()
         let interactor = TodoListInteractor()
         presenter.viewController = startViewController
