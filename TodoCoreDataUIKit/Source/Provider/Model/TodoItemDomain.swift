@@ -8,7 +8,8 @@
 import Foundation
 
 struct TodoItemDomain {
-    let title: String
-    let detail: String
+    let id: UUID?
+    var title: String
+    var detail: String
     let createdAt: String
 }

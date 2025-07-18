@@ -150,7 +150,7 @@ class TodoListPresenter: TodoListPresentationLogic {
     func presentTasks(tasks: [TodoItem]) {
         let data: [TodoItemDomain] = tasks.map{ task in
             let formatDate = task.createdAt?.formatted(date: .abbreviated, time: .complete)
-            return TodoItemDomain(title: task.title ?? "Unknown", detail: task.detail ?? "Unknown", createdAt: formatDate ?? "")
+            return TodoItemDomain(id: task.id, title: task.title ?? "Unknown", detail: task.detail ?? "Unknown", createdAt: formatDate ?? "")
         }
         
         viewController.displayTasks(tasks: data)
