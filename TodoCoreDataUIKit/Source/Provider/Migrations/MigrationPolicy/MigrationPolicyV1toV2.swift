@@ -17,8 +17,6 @@ class MigrationPolicyV1toV2: NSEntityMigrationPolicy {
         }
         
         let destinationInstance = NSManagedObject(entity: entity, insertInto: context)
-        destinationInstance.setValue(UUID(), forKey: "id")
-        
         copyFields(from: sInstance, to: destinationInstance)
         
         manager.associate(sourceInstance: sInstance, withDestinationInstance: destinationInstance, for: mapping)
@@ -28,14 +26,15 @@ class MigrationPolicyV1toV2: NSEntityMigrationPolicy {
     
     private func copyFields(from source: NSManagedObject, to destination: NSManagedObject){
         let sourceEntity = source.entity
+        let destinationEntity = destination.entity
         
-        for attribute in sourceEntity.attributesByName {
+        for attribute in destinationEntity.attributesByName {
             let attributeName = attribute.key
-            
-            if attributeName == "id" {continue}
             
             if let value = source.value(forKey: attributeName) {
                 destination.setValue(value, forKey: attributeName)
+            } else if attributeName == "id" {
+                destination.setValue(UUID(), forKey: attributeName)
             }
         }
     }
